@@ -1,0 +1,55 @@
+{
+  "name": "cms-vue",
+  "version": "0.0.1",
+  "description": "vue + iview",
+  "main": "index.js",
+  "scripts": {
+    "clean": "rimraf dist",
+    "dev": "webpack-dev-server --inline --hot --env.dev",
+    "build": "rimraf dist && webpack -p --progress",
+    "analyzer": "webpack -p --progress --profile --json > log/stats.json && webpack-bundle-analyzer log/stats.json",
+    "test": "mocha test/*.test.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://www.github.com/iamdhj/"
+  },
+  "keywords": [
+    "vue",
+    "iview"
+  ],
+  "author": "hong",
+  "license": "MIT",
+  "dependencies": {
+  },
+  "engines": {
+    "node": ">=6"
+  },
+  "devDependencies": {
+    "autoprefixer": "^8.1.0",
+    "babel-core": "^6.26.0",
+    "babel-loader": "^7.1.4",
+    "babel-plugin-import": "^1.6.7",
+    "babel-preset-env": "^1.6.1",
+    "css-loader": "0.27.3",
+    "file-loader": "^1.1.11",
+    "html-webpack-plugin": "3.1.0",
+    "iview": "^2.11.0",
+    "node-sass": "^4.7.2",
+    "postcss-loader": "2.1.3",
+    "rimraf": "^2.6.2",
+    "sass-loader": "^6.0.7",
+    "style-loader": "0.20.3",
+    "url-loader": "^1.0.1",
+    "vinyl-fs": "^3.0.2",
+    "vue": "^2.5.2",
+    "vue-loader": "14.2.1",
+    "vue-router": "^3.0.1",
+    "vue-template-compiler": "^2.5.2",
+    "vuex": "^3.0.1",
+    "webpack": "4.2.0",
+    "webpack-bundle-analyzer": "^2.11.1",
+    "webpack-cli": "^2.0.13",
+    "webpack-dev-server": "3.1.1"
+  }
+}

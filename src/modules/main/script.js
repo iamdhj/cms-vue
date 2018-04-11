@@ -1,53 +1,67 @@
 import Vue from 'vue'
-import Vuex from 'vuex'
 import iview from 'iview'
 import 'iview/dist/styles/iview.css'
-import {router, links} from './router/router'
+import {Init, Mix} from '*utils'
+import {router, links, paths} from './pages/router'
+import {store} from './store/store'
+
+import {Links} from '*urls'
+
 import './style.scss'
+import view from './view.vue'
 
-import page from './index.vue'
-
-Vue.use(Vuex)
 Vue.use(iview)
 
-const store = new Vuex.Store({
-  state: {
-    count: 0
-  },
-  getters: {
-    double: state => {
-      return state.count * 2
-    }
-  },
-  mutations: {
-    increment(state) {
-      console.log('increment...')
-      ++state.count
-    }
+// 全局路由事件
+router.beforeEach((to, from, next) => {
+  // 默认跳转到‘default'的页面
+  if (to.path === '/') {
+    next({name: 'default', replace: true})
+  } else {
+    next()
   }
 })
-let data = Object.assign(page, {
+
+let page = Mix({
   data: () => ({
-    links
+    links: links.filter(({props}) => props),
+    paths,
+    viewIndex: '',
+    viewTitle: ''
   }),
   computed: {
-    activeName() {
-      let name = '0'
-      let path = location.hash.replace('#', '')
+    activeMenu() {
+      return String(this.viewIndex)
+    }
+  },
+  methods: {
+    // 更新 router-view 信息
+    upViewInfo() {
+      let vIndex, vTitle
+      let path = this.$router.currentRoute.path
       links.forEach((item, index) => {
         if (item.path === path) {
-          name = String(index)
+          vIndex = index
+          vTitle = item.title
           return true
         }
       })
-      return name
+      this.viewIndex = vIndex
+      this.viewTitle = vTitle
+    },
+    logout() {
+      location.href = Links.LOGIN
     }
+  },
+  watch: {
+    '$route': 'upViewInfo'
+  },
+  created() {
+    this.upViewInfo()
   }
-})
+}, view)
 
-let app = new Vue({
-  el: '#app',
+Init({
   store,
-  router,
-  render: h => h(data)
-})
+  router
+}, page)

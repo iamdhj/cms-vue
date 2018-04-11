@@ -1,10 +1,59 @@
+@import '~*style/variables';
+
+body {
+  width: 100vw;
+}
+
 a {
   color: initial;
 }
 
-.self-container {
-  width: 100%;
-  min-width: 800px;
+.cms-container {
+  width: 1200px;
   max-width: 1200px;
+  min-height: 600px;
   margin: auto;
+
+  .cms-header-menu {
+    text-align: right;
+    width: 200px;
+    margin: 0 20px 0 auto;
+    font-size: 18px;
+    a,
+    a span {
+      color: #fff;
+    }
+  }
+
+  .cms-layout {
+    border: 1px solid #d7dde4;
+    .cms-layout-sider {
+      background: #fff;
+      box-shadow: -1px 0 0 0 #dddee1 inset;
+    }
+  }
+
+  .cms-main {
+    min-height: 600px;
+    padding: $main-padding;
+    background-color: #fff;
+  }
+}
+
+.cms-main-title {
+  margin-bottom: $main-padding;
+  padding-bottom: $main-padding;
+  border-bottom: 1px solid #ccc;
+  font-size: $main-padding;
+}
+
+.cms-form {
+  label {
+    position: relative; /* fixed iview label-for bug */
+    z-index: 1;
+  }
+}
+
+.cms-form-input {
+  width: 200px;
 }

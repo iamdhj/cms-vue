@@ -1,8 +1,10 @@
 const path = require('path')
 const webpack = require('webpack')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
+// const CopyWebpackPlugin = require('copy-webpack-plugin')
+const apiMocker = require('webpack-api-mocker')
 const url = require('url')
-const publicPath = '../'
+const publicPath = '/demo/cms-vue/'
 
 const parseEntry = require('./build/entry.js')
 
@@ -15,6 +17,7 @@ module.exports = async (options = {}) => {
         NODE_ENV: JSON.stringify(mode)
       }
     })
+    // new CopyWebpackPlugin(['test/mock/**/*.json'])
   ]
   Object.keys(entry).forEach((name) => {
     if (RegExp('^lib/').test(name)) {
@@ -23,9 +26,9 @@ module.exports = async (options = {}) => {
     let dir = name.replace('modules', 'pages')
     plugins.push(
       new HtmlWebpackPlugin({
-        template: 'src/index.html',
-        filename: `${dir}.html`,
-        chunks: ['lib/vendor', 'lib/manifest', name],
+        template: 'src/template/index.html',
+        filename: `${dir}/index.html`,
+        chunks: ['lib/vendor', 'lib/iview', 'lib/core', 'lib/config', 'runtime', name],
         hash: true
       })
     )
@@ -37,7 +40,7 @@ module.exports = async (options = {}) => {
       path: path.resolve(__dirname, 'dist'),
       filename: options.dev ? '[name].js' : '[name].js?[chunkhash]',
       chunkFilename: '[name].js?[chunkhash]',
-      publicPath: options.dev ? '/' : publicPath
+      publicPath: publicPath
     },
     module: {
       rules: [
@@ -51,25 +54,21 @@ module.exports = async (options = {}) => {
           loader: 'babel-loader',
           query: {
             presets: ['env'],
-            plugins: [
-              // ['component',
-              //   {
-              //     libraryName: 'element-ui',
-              //     styleLibraryName: 'theme-chalk'
-              //   }
-              // ],
-            //   ['import',
-            //     {
-            //       libraryName: 'iview',
-            //       libraryDirectory: 'src/components'
-            //     }
-            //   ]
-            ]
+            plugins: ['syntax-dynamic-import']
           }
         },
         {
           test: /\.scss$/,
-          use: ['style-loader', 'css-loader', 'sass-loader', 'postcss-loader']
+          use: ['style-loader',
+            {
+              loader: 'css-loader',
+              options: {
+                alias: {
+                  '*assets': path.resolve(__dirname, 'src/assets')
+                }
+              }
+            },
+            'sass-loader', 'postcss-loader']
         },
         {
           test: /\.css$/,
@@ -87,43 +86,61 @@ module.exports = async (options = {}) => {
       ]},
     plugins: plugins,
     optimization: {
+      runtimeChunk: 'single',
       splitChunks: {
         cacheGroups: {
+          core: {
+            test: /src\/lib/,
+            chunks: 'initial',
+            name: 'lib/core',
+            enforce: true,
+            minSize: 1,
+            priority: 1
+          },
+          config: {
+            test: /src\/config/,
+            chunks: 'initial',
+            name: 'lib/config',
+            enforce: true,
+            minSize: 1,
+            priority: 1
+          },
           vendor: {
             test: /node_modules/,
             chunks: 'initial',
             name: 'lib/vendor',
-            priority: 10,
-            enforce: true
+            priority: 8
+          },
+          iview: {
+            test: /node_modules\/iview/,
+            chunks: 'initial',
+            name: 'lib/iview',
+            priority: 10
           }
         }
       }
     },
-    externals: {
-      'element-ui': 'element-ui'
-    },
     resolve: {
       alias: {
-        '~': path.resolve(__dirname, 'src')
+        '*': path.resolve(__dirname, 'src'),
+        '*lib': path.resolve(__dirname, 'src/lib'),
+        '*style': path.resolve(__dirname, 'src/style'),
+        '*net': path.resolve(__dirname, 'src/lib/net.js'),
+        '*utils': path.resolve(__dirname, 'src/lib/utils.js'),
+        '*urls': path.resolve(__dirname, 'src/config/urls.js')
       }
     },
     devServer: {
       host: '127.0.0.1',
       port: 8000,
-      proxy: {
-        '/api/': {
-          target: 'http://127.0.0.1:8080',
-          changeOrigin: true,
-          pathRewrite: {
-            '^/api': ''
-          }
-        }
-      },
       historyApiFallback: {
         index: url.parse(options.dev ? '/assets/' : publicPath).pathname
+      },
+      before(app) {
+        apiMocker(app, path.resolve('./test/mocker.js'))
       }
     },
     mode,
-    devtool: options.dev ? '#cheap-module-eval-source-map' : '#source-map'
+    devtool: options.dev ? '#cheap-module-eval-source-map' : '#hidden-source-map'
   }
 }

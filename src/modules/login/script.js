@@ -1,10 +1,10 @@
 import Vue from 'vue'
 import iview from 'iview'
-import 'iview/dist/styles/iview.css'
+// import 'iview/dist/styles/iview.css'
 import {Init, Mix} from '*utils'
 import {Urls, Links} from '*urls'
 
-import './style.scss'
+// import './style.scss'
 import view from './view.vue'
 Vue.use(iview)
 
@@ -37,3 +37,4 @@ let page = Mix({
 }, view)
 
 Init({}, page)
+export default page

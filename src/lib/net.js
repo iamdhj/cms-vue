@@ -27,6 +27,10 @@ let Fetch = function (url, body, header) {
       } else {
         resolve({})
       }
+    }).catch(error => {
+      if (this && this.$error) {
+        this.$error(error)
+      }
     })
     return promise
   }
@@ -34,8 +38,12 @@ let Fetch = function (url, body, header) {
   return fetch(url, header).then(res => {
     if (res.status === 200) {
       return res.json()
-    } else {
+    } else if (this && this.$Message && this.$Message.error) {
       this.$Message.error(`[${res.status}] ${res.statusText}`)
+    }
+  }).catch(error => {
+    if (this && this.$error) {
+      this.$error(error.message)
     }
   })
 }

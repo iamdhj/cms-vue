@@ -11,5 +11,6 @@
                 <Button type="primary" @click="login('userInfo')" long>登录</Button>
             </FormItem>
         </Form>
+        <div id="test">www</div>
     </div>
 </template>

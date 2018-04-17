@@ -51,11 +51,7 @@ module.exports = async (options = {}) => {
         {
           test: /\.js$/,
           exclude: /node_modules/,
-          loader: 'babel-loader',
-          query: {
-            presets: ['env'],
-            plugins: ['syntax-dynamic-import']
-          }
+          loader: 'babel-loader'
         },
         {
           test: /\.scss$/,
